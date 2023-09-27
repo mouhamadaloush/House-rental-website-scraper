@@ -1,13 +1,21 @@
-import sys, time
+import sys, time, argparse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from fpdf import FPDF
 
-#getting main aguments from terminal
-args={}
-for i in range(1,len(sys.argv),2):
-    args[sys.argv[i]] = sys.argv[i+1]
+#parser
+parser = argparse.ArgumentParser(description='This is an educational project in python that allows you to scrape info from a random website I choose "https://www.zumper.com".')
+
+#adding all arguments
+parser.add_argument("-a","--addr",help="Specify address")
+parser.add_argument("-t","--term",help="Specify term(short/long)")
+parser.add_argument("-b","--bedrooms",help="Specify bedrooms")
+parser.add_argument("-d","--bathrooms",help="Specify bathrooms")
+parser.add_argument("-g","--budget",help="Specify budget")
+
+#parse the args
+args = parser.parse_args()
 
 
 options = webdriver.FirefoxOptions()
@@ -24,7 +32,7 @@ searchBox = driver.find_element(By.XPATH, '//*[@id="autocomplete-search-input__s
 
 
 #filling the search box
-searchBox.send_keys(args['-addr'])
+searchBox.send_keys(args.addr)
 time.sleep(0.5)
 searchBox.send_keys(Keys.ENTER)
 
@@ -46,7 +54,7 @@ bathroomsNumSelctor = {'1':'.css-1jm8wsg > div:nth-child(2) > div:nth-child(2) >
 
 
 #long and short term
-if args['-term'] == 'short':
+if args.term == 'short':
     while True:
         try:
             shtermbtn = driver.find_element(By.CSS_SELECTOR, "button.css-1ramhdv-button:nth-child(1)")
@@ -67,11 +75,11 @@ else:
     while True:
         try:
             #choosing bedroom number
-            bdroomNumElem = driver.find_element(By.CSS_SELECTOR, bedroomsNumSelctor[args['-bedrooms']])
+            bdroomNumElem = driver.find_element(By.CSS_SELECTOR, bedroomsNumSelctor[args.bedrooms])
             bdroomNumElem.click()
 
             #choosing bathroom number
-            bathroomNumElem = driver.find_element(By.CSS_SELECTOR, bathroomsNumSelctor[args['-bathrooms']])
+            bathroomNumElem = driver.find_element(By.CSS_SELECTOR, bathroomsNumSelctor[args.bathrooms])
             bathroomNumElem.click()
             break
         except:
@@ -90,7 +98,7 @@ else:
         try:
             bdget = driver.find_element(By.CSS_SELECTOR, '#price')
             bdget.clear()
-            bdget.send_keys(args['-budget'])
+            bdget.send_keys(args.budget)
             break
         except:
             pass
